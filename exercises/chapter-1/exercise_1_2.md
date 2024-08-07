@@ -40,4 +40,42 @@ The program `exercise_1_2a.cpp`, compiled with `g++ --std=c++23 -g -Wall -Wextra
 [[-1/12],[4/3],[-5/2],[4/3],[-1/12]]
 ```
 
-## B
+## Fornberg Algorithm
+
+The Vandermonde system is not well-conditioned when the number of points $n$ is large. A better algorithm is the Fornberg algorithm appearing in the 1998 paper (https://www.jstor.org/stable/2653239) which is a recursive algorithm.
+
+There are two main intuitions behind this algorithm:
+
+First, express the interpolating polynomial $p$, over the first $j+1$ nodes using the Lagrange basis $L_{i,j}$ to obtain the following formula for the $k$-th derivative at $\bar{x}$:
+
+$$ p^{(k)}(\bar{x}) = \sum_{i=0}^n L_{i,j}^{(k)}(\bar{x}) u_i = \sum_{i=0}^n c_{i,j}^k u_i $$
+
+$u_i$ is the function value at the $x_i$ node, and $c_{i,j}^k$ is the $i$-th coefficient when approximating the $k$-th derivative on $j+1$ nodes. Since $L_{i,j}$ are polynomials the Taylor expansion holds exactly (at all points) and so: 
+
+$$ L_{i,j}(x) = \sum_{k=0}^j c_{i,j}^k \frac{(x - \bar{x})^k}{k!} $$
+
+Second, the Lagrange basis over a set of $j+1$ nodes is related to the one over the same nodes minus the last one ($j$ nodes in total). Defining the denominator of $L_{j,j}$ as $D_j = \prod_{\nu=0}^{j-1} (x_j - x_{\nu})$ one gets: 
+
+$$
+ \begin{split}
+    L_{i,j}(x) &= \frac{x - x_j}{x_i - x_j} L_{i, j - 1}(x), \quad \forall i < j \\
+    L_{j,j}(x) &= \frac{D_{j-1}}{D_j}(x - x_{j-1}) L_{j-1, j-1}(x), \quad i = j 
+  \end{split} 
+$$ 
+
+Substituting the Taylor expansions in the recursive relation, equating the polynomial members term by term and assuming:
+
+* $c_{0, 0}^0 = 1$ (the coefficient to interpolate the function with the Lagrange basis at a single point)
+* $c_{i,j}^k$ is defined if $0 \leq i \leq j$ and $0 \leq k \leq j$, else it is zero
+* $D_0 = 1$ (denominator of the Lagrange polynomial referred to a single node)
+
+one gets (remember to sum and subtract $\bar{x}$):
+
+$$
+  \begin{split}
+    c_{i,j}^k &= \frac{k c_{i,j-1}^k + (\bar{x} - x_j) c_{i,j-1}^{k-1}}{x_i-x_j}, \quad \forall i < j \\
+    c_{j,j}^k &= \frac{D_{j-1}}{D_j} \left(k c_{j-1,j-1}^k + (\bar{x} - x_{j-1}) c_{j-1,j-1}^{k-1} \right), \quad i = j
+  \end{split}
+$$
+  
+
