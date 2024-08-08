@@ -1,5 +1,3 @@
-// g++ --std=c++23 -g -Wall -Wextra -Wpedantic exercise_1_2a.cpp -lginac -lcln
-
 #include <cassert>
 #include <ginac/ginac.h>
 #include <ginac/matrix.h>
